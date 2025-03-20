@@ -80,6 +80,7 @@ export class AuthService {
   async loginInstitution(institution: any) {
     const payload = { email: institution.institutionEmail, sub: institution.id };
     return {
+      message:"Logged in successfully",
       accessToken: this.jwtService.sign(payload, {
         expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRY'),
       }),
