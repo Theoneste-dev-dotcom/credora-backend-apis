@@ -21,6 +21,12 @@ import { UsersModule } from './users/user.module';
         database: configService.get<string>('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: false,
+        ssl: true, // Enable SSL for Render's PostgreSQL
+        extra: {
+          ssl: {
+            rejectUnauthorized: false, // Required for Render's PostgreSQL
+          },
+        },
       }),
       inject: [ConfigService],
     }),
