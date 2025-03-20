@@ -1,4 +1,4 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, Get } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { InstitutionService } from './institution.service';
 import { CreateInstitutionDto } from './dtos/create-institution.dto';
@@ -18,5 +18,15 @@ export class InstitutionController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   async createInstitution(@Body() createInstitutionDto: CreateInstitutionDto) {
     return this.institutionService.createInstitution(createInstitutionDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all institutions' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of institutions',
+  })
+  async getAllInstitutions() {
+    return this.institutionService.findAllInstitutions();
   }
 }

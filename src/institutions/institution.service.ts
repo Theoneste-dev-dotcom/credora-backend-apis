@@ -6,6 +6,9 @@ import { Institution } from './entities/institution.entity';
 
 @Injectable()
 export class InstitutionService {
+    findAllInstitutions() {
+        return this.institutionRepository.find();
+    }
   constructor(
     @InjectRepository(Institution)
     private institutionRepository: Repository<Institution>,

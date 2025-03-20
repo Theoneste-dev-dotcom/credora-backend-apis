@@ -9,10 +9,12 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { Institution } from 'src/institutions/entities/institution.entity';
+import { InstitutionModule } from 'src/institutions/institution.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Institution]),
+    InstitutionModule,
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
