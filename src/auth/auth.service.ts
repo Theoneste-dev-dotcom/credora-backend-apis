@@ -5,11 +5,15 @@ import { ConfigService } from '@nestjs/config';
 import { UsersService } from 'src/users/user.service';
 import { CreateUserDto } from 'src/dtos/create-user-dto';
 import { UserResponseDto } from 'src/dtos/user-response.dto';
+import { CreateInstitutionDto } from 'src/institutions/dtos/create-institution.dto';
+import { InstitutionService } from 'src/institutions/institution.service';
+import { InstitutionResponseDto } from 'src/institutions/dtos/institution-response.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
+    private institutionService: InstitutionService,
     private jwtService: JwtService,
     private configService: ConfigService,
   ) {}
@@ -22,6 +26,7 @@ export class AuthService {
     return savedUser;
     
 
+
     // return {
     //   id: savedUser.id,
     //   fullName: savedUser.fullName,
@@ -29,6 +34,37 @@ export class AuthService {
     //   phoneNumber: savedUser.phoneNumber,
     //   address: savedUser.address,
     // };
+  }
+
+  
+  // Institution Signup
+  async signupInstitution(createInstitutionDto: CreateInstitutionDto): Promise<InstitutionResponseDto> {
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(createInstitutionDto.password, salt);
+
+    const savedInstitution = await this.institutionService.createInstitution({
+      ...createInstitutionDto,
+      password: hashedPassword,
+    });
+
+    return {
+      id: savedInstitution.id,
+      institutionName: savedInstitution.institutionName,
+      institutionEmail: savedInstitution.institutionEmail,
+      contactPersonName: savedInstitution.contactPersonName,
+      businessAddress: savedInstitution.businessAddress,
+      institutionWebsite: savedInstitution.institutionWebsite,
+      phoneNumber: savedInstitution.phoneNumber,
+    };
+  }
+  // Institution Login
+  async validateInstitution(email: string, password: string): Promise<any> {
+    const institution = await this.institutionService.findOneByEmail(email);
+    if (institution && (await bcrypt.compare(password, institution.password))) {
+      const { password, ...result } = institution;
+      return result;
+    }
+    return null;
   }
 
   async validateUser(email: string, password: string): Promise<any> {
@@ -40,6 +76,18 @@ export class AuthService {
     return null;
   }
 
+  // Institution Login
+  async loginInstitution(institution: any) {
+    const payload = { email: institution.institutionEmail, sub: institution.id };
+    return {
+      accessToken: this.jwtService.sign(payload, {
+        expiresIn: this.configService.get<string>('JWT_ACCESS_TOKEN_EXPIRY'),
+      }),
+      refreshToken: this.jwtService.sign(payload, {
+        expiresIn: this.configService.get<string>('JWT_REFRESH_TOKEN_EXPIRY'),
+      }),
+    };
+  }
   async login(user: any) {
     const payload = { email: user.email, sub: user.id };
     return {

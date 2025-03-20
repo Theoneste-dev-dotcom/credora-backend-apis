@@ -6,9 +6,13 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from 'src/users/user.module';
 import { JwtRefreshStrategy } from './strategies/jwt-refresh.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/users/user.entity';
+import { Institution } from 'src/institutions/entities/institution.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([User, Institution]),
     UsersModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

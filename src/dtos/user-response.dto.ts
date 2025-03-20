@@ -16,3 +16,4 @@ export class UserResponseDto {
   @ApiProperty()
   address: string;
 }
+
